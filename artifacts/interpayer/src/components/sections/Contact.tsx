@@ -41,30 +41,13 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-const TG_TOKEN = "8634695110:AAEbGK9Hzc4KWfZE3gojRHZE2APWRKDlX_w";
-const TG_CHAT_ID = "8507111889";
-
-function sendToTelegram(data: ContactFormValues): Promise<void> {
-  const lines = [
-    `🔔 Новая заявка — Interpayer`,
-    ``,
-    `Имя: ${data.name}`,
-    `Email: ${data.email}`,
-    data.phone ? `Телефон: ${data.phone}` : null,
-    `Услуга: ${data.service}`,
-    data.message ? `Сообщение: ${data.message}` : null,
-  ].filter(Boolean).join('\n');
-
-  const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`;
-  const params = new URLSearchParams({ chat_id: TG_CHAT_ID, text: lines });
-
-  return new Promise<void>((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve();
-    img.onerror = () => resolve();
-    img.src = `${url}?${params.toString()}`;
-    setTimeout(resolve, 3000);
+async function sendToTelegram(data: ContactFormValues): Promise<void> {
+  const res = await fetch(`/api/telegram`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
+  if (!res.ok) throw new Error('Send failed');
 }
 
 export function Contact() {
