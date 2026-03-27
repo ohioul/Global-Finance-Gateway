@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
-import { Menu, X } from 'lucide-react';
+import { ShieldCheck, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,11 +46,9 @@ export function Navbar() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <img
-              src={`${import.meta.env.BASE_URL}images/logo.png`}
-              alt="Interpayer"
-              className="h-9 w-9 object-contain group-hover:scale-105 transition-transform"
-            />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-gold shadow-[0_0_15px_rgba(212,175,55,0.3)] group-hover:shadow-[0_0_25px_rgba(212,175,55,0.5)] transition-all">
+              <ShieldCheck className="h-6 w-6 text-primary-foreground" />
+            </div>
             <span className="font-display text-xl font-bold tracking-tight text-foreground">
               Inter<span className="text-primary">payer</span>
             </span>
