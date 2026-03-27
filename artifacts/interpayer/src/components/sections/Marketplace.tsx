@@ -8,6 +8,44 @@ import { CheckCircle2, Clock, Globe, Landmark, CreditCard, Bitcoin, FolderTree }
 import { formatCurrency } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
+type BrandConfig = { bg: string; text: string; label: string };
+
+const BRAND_CONFIG: Record<string, BrandConfig> = {
+  stripe:   { bg: '#635BFF', text: '#ffffff', label: 'S' },
+  paypal:   { bg: '#003087', text: '#009cde', label: 'PP' },
+  payoneer: { bg: '#FF4800', text: '#ffffff', label: 'P' },
+  mercury:  { bg: '#000000', text: '#ffffff', label: 'M' },
+  chase:    { bg: '#117ACA', text: '#ffffff', label: 'C' },
+  relay:    { bg: '#1A56DB', text: '#ffffff', label: 'R' },
+  revolut:  { bg: '#0075EB', text: '#ffffff', label: 'R' },
+  wise:     { bg: '#9FE870', text: '#163300', label: 'W' },
+  n26:      { bg: '#48AC98', text: '#ffffff', label: 'N' },
+  bunq:     { bg: '#00D4B3', text: '#ffffff', label: 'b' },
+  square:   { bg: '#000000', text: '#ffffff', label: '□' },
+  bank:     { bg: '#1E3A5F', text: '#ffffff', label: '🏦' },
+};
+
+function getBrandConfig(name: string): BrandConfig | null {
+  const lower = name.toLowerCase();
+  for (const [key, config] of Object.entries(BRAND_CONFIG)) {
+    if (lower.includes(key)) return config;
+  }
+  return null;
+}
+
+function BrandLogo({ name }: { name: string }) {
+  const config = getBrandConfig(name);
+  if (!config) return null;
+  return (
+    <div
+      className="w-full h-full flex items-center justify-center rounded-full font-bold text-sm tracking-tight select-none"
+      style={{ backgroundColor: config.bg, color: config.text }}
+    >
+      {config.label}
+    </div>
+  );
+}
+
 export function Marketplace() {
   const { data: lots, isLoading, error } = useGetLots();
 
@@ -130,11 +168,11 @@ export function Marketplace() {
                   <CardHeader className="pb-4 relative">
                     <div className="flex justify-between items-start mb-4">
                       {/* Logo / Icon */}
-                      <div className="h-14 w-14 rounded-full bg-secondary flex items-center justify-center border border-border/80 shadow-inner overflow-hidden">
-                        {lot.logoUrl ? (
-                          <img src={lot.logoUrl} alt={lot.name} className="w-full h-full object-cover" />
+                      <div className="h-14 w-14 rounded-full overflow-hidden border border-border/40 shadow-sm">
+                        {getBrandConfig(lot.name) ? (
+                          <BrandLogo name={lot.name} />
                         ) : (
-                          <div className="text-primary opacity-80">
+                          <div className="text-primary opacity-80 bg-secondary w-full h-full flex items-center justify-center">
                             {getCategoryIcon(lot.category)}
                           </div>
                         )}
