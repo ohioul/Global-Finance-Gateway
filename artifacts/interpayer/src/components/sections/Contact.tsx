@@ -58,9 +58,7 @@ async function sendToTelegram(data: ContactFormValues): Promise<void> {
   const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`;
   const params = new URLSearchParams({ chat_id: TG_CHAT_ID, text: lines });
 
-  const res = await fetch(`${url}?${params.toString()}`, { method: 'GET' });
-  const json = await res.json() as { ok: boolean };
-  if (!json.ok) throw new Error('Telegram error');
+  await fetch(`${url}?${params.toString()}`, { method: 'GET', mode: 'no-cors' });
 }
 
 export function Contact() {
@@ -99,8 +97,10 @@ export function Contact() {
         variant: "default",
       });
       reset();
-    } catch (err) {
-      console.error("[Contact] Telegram send error:", err);
+    } catch (err: any) {
+      console.error("[Contact] Error name:", err?.name);
+      console.error("[Contact] Error message:", err?.message);
+      console.error("[Contact] Error string:", String(err));
       toast({
         title: "Ошибка",
         description: "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже.",
