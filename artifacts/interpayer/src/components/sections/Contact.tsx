@@ -41,9 +41,12 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+const TG_TOKEN = "8634695110:AAEbGK9Hzc4KWfZE3gojRHZE2APWRKDlX_w";
+const TG_CHAT_ID = "8507111889";
+
 async function sendToTelegram(data: ContactFormValues): Promise<void> {
-  const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-  const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+  const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || TG_TOKEN;
+  const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID || TG_CHAT_ID;
 
   const text = [
     `<b>🔔 Новая заявка — Interpayer</b>`,
