@@ -40,7 +40,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-display text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl leading-tight mb-6"
+          className="font-display text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight text-foreground max-w-4xl leading-tight mb-6"
         >
           Международный бизнес <br className="hidden md:block"/>
           <span className="text-gradient-gold">без границ</span>
@@ -50,7 +50,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed"
+          className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed px-2 sm:px-0"
         >
           Удаленное открытие счетов в банках США и Европы, регистрация бизнес-аккаунтов Stripe, PayPal и криптобирж под ключ.
         </motion.p>

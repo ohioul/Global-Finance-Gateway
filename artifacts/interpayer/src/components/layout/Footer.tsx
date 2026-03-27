@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -9,9 +9,11 @@ export function Footer() {
           
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-gold">
-                <ShieldCheck className="h-5 w-5 text-primary-foreground" />
-              </div>
+              <img
+                src={`${import.meta.env.BASE_URL}images/logo.png`}
+                alt="Interpayer"
+                className="h-8 w-8 object-contain"
+              />
               <span className="font-display text-xl font-bold tracking-tight text-foreground">
                 Inter<span className="text-primary">payer</span>
               </span>
