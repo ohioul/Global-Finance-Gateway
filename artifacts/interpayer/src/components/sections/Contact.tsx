@@ -41,33 +41,15 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-const TG_TOKEN = "8634695110:AAEbGK9Hzc4KWfZE3gojRHZE2APWRKDlX_w";
-const TG_CHAT_ID = "8507111889";
-
 async function sendToTelegram(data: ContactFormValues): Promise<void> {
-  const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || TG_TOKEN;
-  const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID || TG_CHAT_ID;
-
-  const text = [
-    `<b>🔔 Новая заявка — Interpayer</b>`,
-    ``,
-    `<b>Имя:</b> ${data.name}`,
-    `<b>Email:</b> ${data.email}`,
-    data.phone ? `<b>Телефон:</b> ${data.phone}` : null,
-    `<b>Услуга:</b> ${data.service}`,
-    data.message ? `<b>Сообщение:</b> ${data.message}` : null,
-  ]
-    .filter(Boolean)
-    .join('\n');
-
-  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const res = await fetch(`${import.meta.env.BASE_URL}api/telegram`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+    body: JSON.stringify(data),
   });
 
   if (!res.ok) {
-    throw new Error('Telegram API error');
+    throw new Error('Send error');
   }
 }
 
@@ -107,7 +89,8 @@ export function Contact() {
         variant: "default",
       });
       reset();
-    } catch {
+    } catch (err) {
+      console.error("[Contact] Telegram send error:", err);
       toast({
         title: "Ошибка",
         description: "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже.",
