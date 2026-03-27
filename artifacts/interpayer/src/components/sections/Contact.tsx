@@ -35,9 +35,14 @@ const contactSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   email: z.string().email("Введите корректный email"),
   phone: z.string().optional(),
+  telegram: z.string().optional(),
+  vk: z.string().optional(),
   service: z.string().min(1, "Выберите интересующую услугу"),
   message: z.string().optional(),
-});
+}).refine(
+  (data) => (data.telegram && data.telegram.trim().length > 0) || (data.vk && data.vk.trim().length > 0),
+  { message: "Укажите хотя бы один контакт: Telegram или ВКонтакте", path: ["telegram"] }
+);
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
@@ -62,7 +67,7 @@ export function Contact() {
     formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: { service: "" },
+    defaultValues: { service: "", telegram: "", vk: "" },
   });
 
   useEffect(() => {
@@ -183,6 +188,32 @@ export function Contact() {
                       <label className="text-sm font-medium text-foreground">Телефон</label>
                       <Input placeholder="+1 234 567 8900" {...register("phone")} />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-foreground">
+                        Telegram <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        placeholder="@username"
+                        {...register("telegram")}
+                        className={errors.telegram ? "border-destructive focus-visible:ring-destructive" : ""}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-foreground">
+                        ВКонтакте <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        placeholder="vk.com/username или ID"
+                        {...register("vk")}
+                        className={errors.vk ? "border-destructive focus-visible:ring-destructive" : ""}
+                      />
+                    </div>
+                    {errors.telegram && (
+                      <p className="text-xs text-destructive sm:col-span-2 -mt-3">{errors.telegram.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1">
