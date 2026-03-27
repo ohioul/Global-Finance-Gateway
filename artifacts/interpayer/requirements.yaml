@@ -1,0 +1,18 @@
+packages:
+  "framer-motion": "For premium page transitions and scroll-triggered animations"
+  "react-hook-form": "For robust contact form state management"
+  "@hookform/resolvers": "For Zod validation integration with react-hook-form"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to merge tailwind classes without style conflicts"
+
+images:
+  - path: "artifacts/interpayer/public/images/hero-bg.png"
+    description: "Deep premium dark navy blue abstract background with elegant, subtle glowing gold geometric lines and soft volumetric lighting. Corporate finance, luxury wealth management aesthetic."
+    aspect_ratio: "16:9"
+  - path: "artifacts/interpayer/public/images/contact-bg.png"
+    description: "Abstract luxurious dark blue dark texture with faint gold dust particles and subtle gradient meshes. High-end, professional, trust-inspiring."
+    aspect_ratio: "16:9"
+
+notes:
+  - "Importing API hooks directly from @workspace/api-client-react as specified in implementation notes."
+  - "Assuming Russian language for all copy as requested."

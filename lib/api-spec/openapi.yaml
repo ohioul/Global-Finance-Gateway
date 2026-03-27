@@ -1,15 +1,18 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Interpayer API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: lots
+    description: Payment system lots
+  - name: contacts
+    description: Contact form
 paths:
   /healthz:
     get:
@@ -24,6 +27,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /lots:
+    get:
+      operationId: getLots
+      tags: [lots]
+      summary: Get all service lots
+      description: Returns all available payment system and bank lots
+      responses:
+        "200":
+          description: List of lots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lot"
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contacts]
+      summary: Submit contact form
+      description: Submit a contact/inquiry form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactRequest"
+      responses:
+        "200":
+          description: Contact submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +70,70 @@ components:
           type: string
       required:
         - status
-
+    Lot:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum: [bank, payment_system, offshore, crypto]
+        country:
+          type: string
+        description:
+          type: string
+        price:
+          type: string
+        currency:
+          type: string
+        timeline:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        logoUrl:
+          type: string
+          nullable: true
+        available:
+          type: boolean
+      required:
+        - id
+        - name
+        - category
+        - country
+        - description
+        - price
+        - currency
+        - timeline
+        - features
+        - available
+    ContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        service:
+          type: string
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - service
+    ContactResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message
