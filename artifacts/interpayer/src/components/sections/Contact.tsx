@@ -44,7 +44,7 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 const TG_TOKEN = "8634695110:AAEbGK9Hzc4KWfZE3gojRHZE2APWRKDlX_w";
 const TG_CHAT_ID = "8507111889";
 
-async function sendToTelegram(data: ContactFormValues): Promise<void> {
+function sendToTelegram(data: ContactFormValues): Promise<void> {
   const lines = [
     `🔔 Новая заявка — Interpayer`,
     ``,
@@ -58,7 +58,13 @@ async function sendToTelegram(data: ContactFormValues): Promise<void> {
   const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`;
   const params = new URLSearchParams({ chat_id: TG_CHAT_ID, text: lines });
 
-  await fetch(`${url}?${params.toString()}`, { method: 'GET', mode: 'no-cors' });
+  return new Promise<void>((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve();
+    img.src = `${url}?${params.toString()}`;
+    setTimeout(resolve, 3000);
+  });
 }
 
 export function Contact() {
