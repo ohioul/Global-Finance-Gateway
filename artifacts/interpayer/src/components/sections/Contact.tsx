@@ -1,16 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSubmitContact, useGetLots } from '@workspace/api-client-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Schema matches ContactRequest definition
+const SERVICES = [
+  { name: "Bank of America", country: "США" },
+  { name: "Chase Business", country: "США" },
+  { name: "Mercury Bank", country: "США" },
+  { name: "Relay Financial", country: "США" },
+  { name: "Revolut Business", country: "Великобритания/ЕС" },
+  { name: "Wise Business", country: "ЕС/Великобритания" },
+  { name: "N26 Business", country: "Германия/ЕС" },
+  { name: "Bunq Business", country: "Нидерланды/ЕС" },
+  { name: "Stripe Персональный", country: "США/Весь мир" },
+  { name: "Stripe Бизнес", country: "США/Весь мир" },
+  { name: "PayPal Бизнес", country: "США/Весь мир" },
+  { name: "Payoneer Персональный", country: "США/Весь мир" },
+  { name: "Payoneer Бизнес", country: "США/Весь мир" },
+  { name: "Square Business", country: "США" },
+  { name: "Offshore Bank (BVI)", country: "BVI" },
+  { name: "Offshore Bank (Каймановы о-ва)", country: "Каймановы острова" },
+  { name: "Инвестиционный Фонд (ЕС)", country: "Люксембург/Ирландия" },
+  { name: "Криптобиржа (Эстония)", country: "Эстония/ЕС" },
+  { name: "Криптобиржа (BVI/Сейшелы)", country: "BVI / Сейшелы" },
+];
+
 const contactSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   email: z.string().email("Введите корректный email"),
@@ -21,10 +41,36 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+async function sendToTelegram(data: ContactFormValues): Promise<void> {
+  const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+  const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+
+  const text = [
+    `<b>🔔 Новая заявка — Interpayer</b>`,
+    ``,
+    `<b>Имя:</b> ${data.name}`,
+    `<b>Email:</b> ${data.email}`,
+    data.phone ? `<b>Телефон:</b> ${data.phone}` : null,
+    `<b>Услуга:</b> ${data.service}`,
+    data.message ? `<b>Сообщение:</b> ${data.message}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Telegram API error');
+  }
+}
+
 export function Contact() {
   const { toast } = useToast();
-  const { mutate, isPending } = useSubmitContact();
-  const { data: lots } = useGetLots();
+  const [isPending, setIsPending] = useState(false);
 
   const {
     register,
@@ -34,12 +80,9 @@ export function Contact() {
     formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: {
-      service: "",
-    }
+    defaultValues: { service: "" },
   });
 
-  // Listen for custom event from Marketplace to pre-fill service
   useEffect(() => {
     const handleSelectService = (e: Event) => {
       const customEvent = e as CustomEvent<string>;
@@ -51,33 +94,33 @@ export function Contact() {
     return () => window.removeEventListener('select-service', handleSelectService);
   }, [setValue]);
 
-  const onSubmit = (data: ContactFormValues) => {
-    mutate({ data }, {
-      onSuccess: (response) => {
-        toast({
-          title: "Заявка отправлена!",
-          description: response.message || "Наш менеджер свяжется с вами в ближайшее время.",
-          variant: "default",
-        });
-        reset();
-      },
-      onError: () => {
-        toast({
-          title: "Ошибка",
-          description: "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже.",
-          variant: "destructive",
-        });
-      }
-    });
+  const onSubmit = async (data: ContactFormValues) => {
+    setIsPending(true);
+    try {
+      await sendToTelegram(data);
+      toast({
+        title: "Заявка отправлена!",
+        description: "Наш менеджер свяжется с вами в ближайшее время.",
+        variant: "default",
+      });
+      reset();
+    } catch {
+      toast({
+        title: "Ошибка",
+        description: "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
     <section id="contact" className="py-24 relative overflow-hidden border-t border-border/50">
-      {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src={`${import.meta.env.BASE_URL}images/contact-bg.png`} 
-          alt="Abstract Contact Background" 
+        <img
+          src={`${import.meta.env.BASE_URL}images/contact-bg.png`}
+          alt="Abstract Contact Background"
           className="w-full h-full object-cover opacity-20 mix-blend-overlay"
         />
         <div className="absolute inset-0 bg-background/90 backdrop-blur-[2px]"></div>
@@ -85,7 +128,7 @@ export function Contact() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -100,7 +143,7 @@ export function Contact() {
             <p className="text-lg text-muted-foreground mb-8">
               Оставьте заявку, и наш специалист свяжется с вами для бесплатной консультации и подбора оптимального финансового решения.
             </p>
-            
+
             <div className="space-y-6">
               <div className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -132,11 +175,11 @@ export function Contact() {
             <Card className="border-border bg-card/80 backdrop-blur-md shadow-2xl">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                  
+
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-foreground">Имя <span className="text-destructive">*</span></label>
-                    <Input 
-                      placeholder="Ваше имя или название компании" 
+                    <Input
+                      placeholder="Ваше имя или название компании"
                       {...register("name")}
                       className={errors.name ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
@@ -146,8 +189,8 @@ export function Contact() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-foreground">Email <span className="text-destructive">*</span></label>
-                      <Input 
-                        placeholder="example@mail.com" 
+                      <Input
+                        placeholder="example@mail.com"
                         type="email"
                         {...register("email")}
                         className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
@@ -156,10 +199,7 @@ export function Contact() {
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-foreground">Телефон</label>
-                      <Input 
-                        placeholder="+1 234 567 8900" 
-                        {...register("phone")}
-                      />
+                      <Input placeholder="+1 234 567 8900" {...register("phone")} />
                     </div>
                   </div>
 
@@ -172,11 +212,10 @@ export function Contact() {
                       >
                         <option value="" disabled hidden>Выберите из списка...</option>
                         <option value="Общая консультация">Общая консультация</option>
-                        {lots?.map(lot => (
-                          <option key={lot.id} value={lot.name}>{lot.name} ({lot.country})</option>
+                        {SERVICES.map(s => (
+                          <option key={s.name} value={s.name}>{s.name} ({s.country})</option>
                         ))}
                       </select>
-                      {/* Custom caret for select */}
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-muted-foreground">
                         <svg className="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                           <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
@@ -188,22 +227,22 @@ export function Contact() {
 
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-foreground">Сообщение (необязательно)</label>
-                    <Textarea 
-                      placeholder="Опишите вашу задачу или задайте вопрос..." 
+                    <Textarea
+                      placeholder="Опишите вашу задачу или задайте вопрос..."
                       {...register("message")}
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    variant="gold" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    variant="gold"
+                    size="lg"
                     className="w-full mt-2"
                     disabled={isPending}
                   >
                     {isPending ? "Отправка..." : "Отправить заявку"}
                   </Button>
-                  
+
                   <p className="text-xs text-center text-muted-foreground mt-4">
                     Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности.
                   </p>
