@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'wouter';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 export function Footer() {
@@ -58,9 +59,9 @@ export function Footer() {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Interpayer. Все права защищены.
           </p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-6">
+            <Link href="/offer" className="text-sm text-muted-foreground hover:text-primary transition-colors">Публичная оферта</Link>
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Политика конфиденциальности</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Условия использования</a>
           </div>
         </div>
       </div>
