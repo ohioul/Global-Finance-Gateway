@@ -6,14 +6,10 @@ const TG_TOKEN = "8634695110:AAEbGK9Hzc4KWfZE3gojRHZE2APWRKDlX_w";
 const TG_CHAT_ID = "8507111889";
 
 router.post("/telegram", async (req, res) => {
-  const { name, email, phone, telegram, vk, service, message } = req.body;
+  const { name, email, phone, service, message } = req.body;
 
   if (!name || !email || !service) {
     return res.status(400).json({ ok: false, error: "Missing required fields" });
-  }
-
-  if (!telegram && !vk) {
-    return res.status(400).json({ ok: false, error: "Telegram or VK required" });
   }
 
   const lines = [
@@ -22,8 +18,6 @@ router.post("/telegram", async (req, res) => {
     `<b>Имя:</b> ${name}`,
     `<b>Email:</b> ${email}`,
     phone ? `<b>Телефон:</b> ${phone}` : null,
-    telegram ? `<b>Telegram:</b> ${telegram}` : null,
-    vk ? `<b>ВКонтакте:</b> ${vk}` : null,
     `<b>Услуга:</b> ${service}`,
     message ? `<b>Сообщение:</b> ${message}` : null,
   ].filter(Boolean).join("\n");
