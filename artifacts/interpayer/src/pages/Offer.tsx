@@ -201,7 +201,7 @@ export default function Offer() {
               <p>
                 <strong>Сайт:</strong> interpayer.agency<br/>
                 <strong>Email:</strong> support@interpayer.com<br/>
-                <strong>Телефон:</strong> +1 (575) 570 04 58
+                <strong>Телефон:</strong> +7 (995) 657-22-71
               </p>
             </div>
             <p className="text-sm text-muted-foreground mt-4">
