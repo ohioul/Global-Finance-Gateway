@@ -39,11 +39,11 @@ export function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-primary mt-0.5" />
-                <span className="text-muted-foreground">support@interpayer.agency Moscow RU</span>
+                <span className="text-muted-foreground">support@interpayer.agency<br/>Moscow RU</span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-primary mt-0.5" />
-                <span className="text-muted-foreground">+1 (575) 570 04 58</span>
+                <span className="text-muted-foreground">+7 (995) 657-22-71<br/>+1 (575) 570 04 58</span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary mt-0.5" />
