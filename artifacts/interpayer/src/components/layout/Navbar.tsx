@@ -49,7 +49,7 @@ export function Navbar() {
             <img
               src={`${import.meta.env.BASE_URL}images/logo.png`}
               alt="Interpayer"
-              className="h-16 w-16 object-contain group-hover:scale-105 transition-transform"
+              className="h-9 w-9 object-contain group-hover:scale-105 transition-transform"
             />
             <span className="font-display text-xl font-bold tracking-tight text-foreground">
               Inter<span className="text-primary">payer</span>
