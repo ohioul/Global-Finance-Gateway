@@ -103,10 +103,7 @@ export function Contact() {
         variant: "default",
       });
       reset();
-    } catch (err: any) {
-      console.error("[Contact] Error name:", err?.name);
-      console.error("[Contact] Error message:", err?.message);
-      console.error("[Contact] Error string:", String(err));
+    } catch {
       toast({
         title: "Ошибка",
         description: "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже.",
