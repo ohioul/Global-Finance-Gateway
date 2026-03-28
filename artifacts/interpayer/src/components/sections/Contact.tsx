@@ -46,13 +46,36 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+const TG_BOT_TOKEN = "8634695110:AAEbGK9Hzc4KWfZE3gojRHZE2APWRKDlX_w";
+const TG_CHAT_ID = "8507111889";
+
 async function sendToTelegram(data: ContactFormValues): Promise<void> {
-  const res = await fetch(`/api/telegram`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Send failed');
+  const lines = [
+    `<b>🔔 Новая заявка — Interpayer</b>`,
+    ``,
+    `<b>Имя:</b> ${data.name}`,
+    `<b>Email:</b> ${data.email}`,
+    data.phone ? `<b>Телефон:</b> ${data.phone}` : null,
+    data.telegram ? `<b>Telegram:</b> ${data.telegram}` : null,
+    data.vk ? `<b>ВКонтакте:</b> ${data.vk}` : null,
+    `<b>Услуга:</b> ${data.service}`,
+    data.message ? `<b>Сообщение:</b> ${data.message}` : null,
+  ].filter(Boolean).join("\n");
+
+  const res = await fetch(
+    `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TG_CHAT_ID,
+        text: lines,
+        parse_mode: "HTML",
+      }),
+    }
+  );
+  const result = await res.json();
+  if (!result.ok) throw new Error("Telegram send failed");
 }
 
 export function Contact() {
